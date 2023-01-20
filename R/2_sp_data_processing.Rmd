@@ -1,0 +1,64 @@
+---
+title: "sp_data_processing"
+author: "Simon Rolph"
+date: "2023-01-20"
+output: html_document
+---
+
+Load packages
+
+
+```{r}
+library(rgbif)
+#library(spThin)
+```
+
+
+Species list
+
+
+Download data
+
+
+```{r}
+print("Hello")
+
+#make data request
+sp_data_request <- occ_download(pred("taxonKey","5334220"),pred("gadm","GBR.3_1"))
+
+#see how it's going
+occ_download_wait(sp_data_request[1])
+
+# get data
+d <- occ_download_get(sp_data_request[1]) %>% #'0250230-220831081235567'
+    occ_download_import()
+
+saveRDS(d,"data/raw/occurence/5334220.rds")
+```
+
+Clean and project to OSGB
+
+
+```{r}
+#d <- readRDS("data/raw/occurence/5334220.rds")
+
+# process the data
+process_gbif_data <- function(d){
+  d <- readRDS(d)
+  d<- d %>% dplyr::filter(occurrenceStatus == "PRESENT",
+         coordinateUncertaintyInMeters <= 100)
+  d <- st_as_sf(d,coords =c("decimalLongitude","decimalLatitude"),crs = 4326) %>% 
+    st_transform(27700) 
+  d
+}
+
+#generate a list of species
+species_list <- function(d){
+  unique(d$speciesKey)
+}
+
+#saveRDS(d,"data/derived/occurence/5334220.rds")
+```
+
+
+

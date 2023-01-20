@@ -1,0 +1,46 @@
+---
+title: "Environmental data processing"
+author: "Simon Rolph"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+packages
+
+```{r}
+library(sf)
+library(terra)
+```
+
+Define extent
+
+```{r}
+boundary <- st_read("data/raw/boundaries/SG_CairngormsNationalPark_2010/SG_CairngormsNationalPark_2010.shp")
+bbox <- st_bbox(boundary)
+
+boundary %>% st_transform(4326) %>% st_bbox()
+
+print("blob")
+
+
+```
+
+Load layers which have been downloaded from google earth engine and reproject to OSGB
+
+```{r}
+compile_env_layers <- function(bio_image,predictors_image){
+  # env_layers <- rast(c("data/raw/environmental/bio-image.tif",
+  #                    "data/raw/environmental/predictors-image.tif"))
+  env_layers <- rast(c(bio_image,
+                     predictors_image))
+
+  env_layers <- project(env_layers,"EPSG:27700")
+  
+  env_layers
+  
+}
+
+#writeRaster(env_layers,filename = "data/derived/environmental/env-layers-OSGB.tif")
+
+```
+

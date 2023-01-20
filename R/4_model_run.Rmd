@@ -1,0 +1,94 @@
+---
+title: "4_model_run"
+author: "Simon Rolph"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+Packages
+
+```{r}
+
+library(terra)
+library(magrittr)
+
+#alternative models to explore
+library(mgcv)
+library(Hmsc)
+
+```
+
+Load data
+
+```{r}
+sdmdata <- readRDS("data/derived/occurence/5334220_presence_absence.RDS")
+
+#model on all data
+m1 <- glm(reformulate(names(sdmdata)[3:27], response = 'pres'), data=sdmdata, family="binomial")
+#plot(m1)
+saveRDS(m1,"models/sdm1.RDS")
+
+#k fold models
+models <- list()
+for(i in 1:10){
+  #90% of data
+  sdmdata_90 <- sdmdata[sdmdata$fold != i,]
+  models[[i]] <- glm(reformulate(names(sdmdata_90)[3:27], response = 'pres'), data=sdmdata_90,family="binomial")
+}
+
+```
+
+
+Make prediction in space
+
+```{r}
+library(predicts)
+
+env_data <- rast("data/derived/environmental/env-layers-OSGB.tif")
+p <- predict(env_data, m1,type="response")
+p
+
+#plot raster and add points map
+plot(p)
+points(sdmdata$x[sdmdata$pres==1],sdmdata$y[sdmdata$pres==1],col = "blue",pch=20)
+points(sdmdata$x[sdmdata$pres==0],sdmdata$y[sdmdata$pres==0],col = "black",pch=20)
+
+# calculate model variability
+model_variability <- lapply(models,FUN = function(x){predict(env_data, x,type="response")}) %>% 
+  rast() %>%
+  stdev()
+  #stdev(filename = "outputs/model_variability/variability1.tif",overwrite=TRUE) 
+
+#writeRaster(model_variability,"outputs/model_variability/variability1.tif")
+#saveRDS(model_variability,"outputs/model_variability/variability1.RDS")
+
+plot(model_variability)
+points(sdmdata$x[sdmdata$pres==1],sdmdata$y[sdmdata$pres==1],col = "blue",pch=20)
+points(sdmdata$x[sdmdata$pres==0],sdmdata$y[sdmdata$pres==0],col = "black",pch=20)
+
+#remotes::install_github("rstudio/leaflet")
+
+#plet(model_variability)
+
+
+```
+
+
+
+
+
+```{r}
+model_variability <- readRDS("outputs/model_variability/variability1.RDS")
+sample_points <- sample(1:length(values(p)),1000)
+plot(values(p)[sample_points],values(model_variability)[sample_points])
+
+
+
+```
+
+
+
+
+
+
+
