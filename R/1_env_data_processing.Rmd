@@ -5,7 +5,13 @@ date: "`r Sys.Date()`"
 output: html_document
 ---
 
-packages
+This script prepares the environmental data (climate, land-use etc.)
+
+This script is currently not run as part of the {targets} pipeline. An output file of this script are loaded into the pipeline as files. This output is a `.tif` file containing the environmental data for the target region and is saved in this location. `data/derived/environmental/env-layers-OSGB.tif` 
+
+The are of interest (AOI) boundary, represented as well known text (WKT) is saved to `data/derived/environmental/AOI_WKT.txt`and used when querying GBIF.
+
+Load packages
 
 ```{r}
 library(sf)
@@ -15,32 +21,48 @@ library(terra)
 Define extent
 
 ```{r}
-boundary <- st_read("data/raw/boundaries/SG_CairngormsNationalPark_2010/SG_CairngormsNationalPark_2010.shp")
-bbox <- st_bbox(boundary)
+AOI_boundary_file_location = "data/raw/boundaries/SG_CairngormsNationalPark_2010/SG_CairngormsNationalPark_2010.shp"
 
-boundary %>% st_transform(4326) %>% st_bbox()
+#read in the park boundary
+boundary <- st_read(AOI_boundary_file_location)
 
-print("blob")
+#this outputs the bounding box which can be used in the GEE script
+boundary %>% st_bbox()
 
+#appriximate WKT of park with a bit of buffering
+park_wkt <- boundary %>%
+  st_buffer(10000) %>% # buffer by 10k
+  st_transform(4326) %>% #transform to wgs1984
+  st_simplify(dTolerance=1000) %>% # simplify
+  st_geometry() %>% #only select the geometry to that st_as_text() works properly
+  st_as_text()
+
+#write the boundary of the AOI (area of interest) as WKT which can be used for querying GBIF
+writeLines(park_wkt,"data/derived/environmental/AOI_WKT.txt")
 
 ```
 
 Load layers which have been downloaded from google earth engine and reproject to OSGB
 
 ```{r}
-compile_env_layers <- function(bio_image,predictors_image){
-  # env_layers <- rast(c("data/raw/environmental/bio-image.tif",
-  #                    "data/raw/environmental/predictors-image.tif"))
-  env_layers <- rast(c(bio_image,
-                     predictors_image))
 
-  env_layers <- project(env_layers,"EPSG:27700")
-  
-  env_layers
-  
-}
+bio_image <- "data/raw/environmental/bio-image.tif"
+predictors_image <- "data/raw/environmental/predictors-image.tif"
 
-#writeRaster(env_layers,filename = "data/derived/environmental/env-layers-OSGB.tif")
+#combine into one spatRaster
+env_layers <- rast(c(bio_image,
+                   predictors_image))
+
+#project to OSGB
+env_layers <- project(env_layers,"EPSG:27700")
+
+#(optionally) mask to the park boundary
+#env_layers <- env_layers %>% mask(boundary %>% st_buffer(10000))
+
+env_layers
+
+#save the raster  
+writeRaster(env_layers,filename = "data/derived/environmental/env-layers-OSGB.tif")
 
 ```
 

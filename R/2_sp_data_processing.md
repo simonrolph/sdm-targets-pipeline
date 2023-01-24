@@ -1,13 +1,14 @@
 ---
 title: "sp_data_processing"
 author: "Simon Rolph"
-date: "`r Sys.Date()`"
+date: "2023-01-24"
 output: html_document
 ---
 
 ### Load packages
 
-```{r,eval = F}
+
+```r
 library(rgbif)
 library(dplyr)
 #library(spThin)
@@ -17,7 +18,8 @@ library(dplyr)
 
 The species list is stored as a text file of GBIF taxon IDs in `sp_list.txt`. You can add more species by looking up their taxon key on gbif and adding it to the list. This list is used to define the values in `tar_map()`.
 
-```{r,eval = F}
+
+```r
 sp_list_taxon_id <- readLines("data/raw/species/sp_list.txt")
 aoi_wkt <- readLines("data/derived/environmental/AOI_WKT.txt") # the area of interest
 ```
@@ -27,7 +29,8 @@ aoi_wkt <- readLines("data/derived/environmental/AOI_WKT.txt") # the area of int
 
 This code chunk downloads the data from GBIF using R package `rgbif` 
 
-```{r,eval = F}
+
+```r
 #make data request
 sp_data_request <- occ_download(pred_in("taxonKey",sp_list_taxon_id),
                                 pred("gadm","GBR.3_1"),
@@ -75,7 +78,6 @@ d %>%
   mutate(human_readable = paste0(n_records," record(s) of ",species," recorded by ",rightsHolder," with license: ",license)) %>%
   pull(human_readable) %>%
   writeLines("data/derived/occurence/species_data_rights_holders.txt")
-
 ```
 
 ### Pipeline functions start
@@ -84,7 +86,8 @@ From this point forward, R scripts are written as functions and used the the {ta
 
 This script cleans and projects the gbif data to OSGB
 
-```{r}
+
+```r
 #d <- readRDS("data/raw/occurence/5334220.rds")
 
 # process the data

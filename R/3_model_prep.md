@@ -1,13 +1,14 @@
 ---
 title: "Preparation for running models"
 author: "Simon Rolph"
-date: "`r Sys.Date()`"
+date: "2023-01-24"
 output: html_document
 ---
 
 Generate background samples and extract environmental data for presence occurrence data
 
-```{r}
+
+```r
 generate_samples <- function(env_data,occ_data,k_folds = 5){
   env_data <- rast(env_data)
   

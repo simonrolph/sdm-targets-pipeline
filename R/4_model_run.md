@@ -1,13 +1,14 @@
 ---
 title: "4_model_run"
 author: "Simon Rolph"
-date: "`r Sys.Date()`"
+date: "2023-01-24"
 output: html_document
 ---
 
 Fit models
 
-```{r}
+
+```r
 #model on all data
 fit_model <- function(sdm_data){
   m1 <- glm(reformulate(names(sdm_data)[3:27], response = 'pres'), data=sdm_data, family="binomial")
@@ -28,12 +29,12 @@ fit_bs_models <- function(sdm_data){
   
   bs_models
 }
-
 ```
 
 Make predictions in space
 
-```{r}
+
+```r
 #prediction of probability of being in a location
 sp_probability <- function(model,env_data,taxon_id){
   env_data <- rast(env_data) #load in the environmental data from file
@@ -42,13 +43,12 @@ sp_probability <- function(model,env_data,taxon_id){
   writeRaster(p,file_name,overwrite =T) # write out the raster tile
   file_name #return the file name 
 }
-
 ```
 
 Calculate model variability based on the k-fold bootstrapped models.
 
-```{r}
 
+```r
 # model uncertainty
 sp_variability <- function(models,env_data,taxon_id){
   env_data <- rast(env_data) #load in the environmental data from file
@@ -58,12 +58,12 @@ sp_variability <- function(models,env_data,taxon_id){
     stdev(filename = file_name, overwrite=T)
   file_name
 }
-
 ```
 
 Combine the single species outputs into stacked species richness and average model variability
 
-```{r}
+
+```r
 build_sp_richness <- function(rasters){
   file_name <- "outputs/combined/richness/sp_richness.tif"
   rast(rasters) %>% 
@@ -79,8 +79,6 @@ build_rec_priority <- function(rasters){
   
   file_name
 }
-
-
 ```
 
 
@@ -89,8 +87,8 @@ build_rec_priority <- function(rasters){
 
 Packages
 
-```{r,eval=F}
 
+```r
 library(terra)
 library(magrittr)
 
@@ -99,10 +97,10 @@ library(mgcv)
 library(Hmsc)
 
 library(predicts)
-
 ```
 
-```{r,eval = F}
+
+```r
 #boundary
 boundary <- st_read("data/raw/boundaries/SG_CairngormsNationalPark_2010/SG_CairngormsNationalPark_2010.shp")
 
@@ -116,12 +114,12 @@ plet(sp_priority,tiles = "Streets")
 #species maps
 rast(list.files("outputs/by_species/prediction",full.names = T)) %>% plot()
 rast(list.files("outputs/by_species/model_variability",full.names = T)) %>% plot()
-
 ```
 
 
 
-```{r,eval=F}
+
+```r
 model_variability <- readRDS("outputs/model_variability/variability1.RDS")
 sample_points <- sample(1:length(values(p)),1000)
 plot(values(p)[sample_points],values(model_variability)[sample_points])
@@ -140,7 +138,6 @@ points(sdmdata$x[sdmdata$pres==0],sdmdata$y[sdmdata$pres==0],col = "black",pch=2
 #remotes::install_github("rstudio/leaflet")
 
 #plet(model_variability)
-
 ```
 
 
