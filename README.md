@@ -1,5 +1,7 @@
 # An example {targets} pipeline for species distribution modelling
 
+(This is a work in progress)
+
 ## Overview
 
 This is a pipeline for modelling species distributions using open data: occurrence data from GBIF and environmental data sourced from Google Earth Engine (GEE) to produce maps of predicted species distributions, and maps of model variability. The maps of model variability can then be used to decide where to collect extra information to improve the model (as trialled in the DECIDE project).
@@ -32,6 +34,8 @@ The pipeline is started with `targets::tar_make()`
 
 The pipeline can be visualised with `tar_visnetwork(targets_only = T)`:
 
+![image](https://user-images.githubusercontent.com/17750766/214363002-0c057b06-3753-406a-9521-2667b5e84b23.png)
+
 It does't always look as neat as that, I had to move the blobs about a bit.
 
 ### Process gbif data
@@ -56,21 +60,10 @@ Using the environmental layers, we use the models to predict probability of occu
 
 Each of the by-species outputs (model prediction and model variability) are combined into single layers. Species richness is calculated by summing the predicted probability of occurence of each model and 'recording priority' is the mean of the model variabilities.
 
+## Outputs
 
+Here you can see some example outputs which may not make much sense as models are simple and currently got 5 unrelated species probabilities stacked.
 
+![image](https://user-images.githubusercontent.com/17750766/214363557-92b4509c-3bf4-4d58-93c4-bbb5da8e2e2e.png)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+Species richness values have been rounded to a whole number to a terra/leaflet issue.
