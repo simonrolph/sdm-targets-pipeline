@@ -1,0 +1,1 @@
+This is where I keep a WKT file describing the area of interest and a .tif which has all the environmental data layers after any processing

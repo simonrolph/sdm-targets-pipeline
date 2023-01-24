@@ -1,0 +1,1 @@
+This is where I put the .tif raster files with environmental data from Google Earth Engine (GEE)
