@@ -4,6 +4,6 @@
 .Ruserdata
 .Renviron
 
-data/
-outputs/
+data/*.tif
+outputs/*.tif
 
