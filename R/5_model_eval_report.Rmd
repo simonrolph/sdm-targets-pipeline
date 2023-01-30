@@ -1,0 +1,120 @@
+---
+title: "SDM evaluation"
+date: "`r Sys.Date()`"
+output: html_document
+params:
+  species_metadata: species_metadata
+  sdm_data: sdm_data
+  full_model:  full_model
+  sdm_pred:  sdm_pred
+  bs_models:  bs_models
+  sdm_var: sdm_var
+---
+
+```{r,echo=F,include=F}
+knitr::opts_chunk$set(echo = TRUE)
+species_metadata <- params$species_metadata
+sdmdata <- params$sdm_data
+full_model <- params$full_model
+sdm_pred <- params$sdm_pred
+bs_models <- params$bs_models
+sdm_var <- params$sdm_var
+
+
+library(terra)
+library(leaflet)
+library(ggplot2)
+library(tidyr)
+library(dplyr)
+library(ggeffects)
+```
+
+# `r species_metadata$species` 
+
+`r species_metadata$vernacularName`
+
+## Maps
+
+### Species distribution
+
+Where does the model predict the species to occur? Blue points indicate true presences.
+
+```{r,echo=F, out.width = '100%'}
+plet(rast(sdm_pred),tiles="Streets") %>% 
+  addCircleMarkers(~x, ~y, data = sdmdata[sdmdata$pres==1,],stroke = FALSE, fillOpacity = 0.5,radius=3)
+```
+
+### Model variability
+
+Where are the model outputs most variable? Blue points indicate true presences.
+
+```{r,echo=F, out.width = '100%'}
+plet(rast(sdm_var),tiles="Streets") %>% 
+  addCircleMarkers(~x, ~y, data = sdmdata[sdmdata$pres==1,],stroke = FALSE, fillOpacity = 0.5,radius=3)
+```
+
+## Presence vs background plots
+
+Blue density indicates environmental conditions of presence records. Grey indicates environment of background samples.
+
+```{r,echo=F, out.width = '100%',warning=FALSE}
+sdmdata2 <- sdmdata %>% select(-x,-y,-ID)
+sdmdata2 <-sdmdata2 %>% pivot_longer(cols = c(-pres,-fold))
+
+
+ggplot(sdmdata2 %>% filter(pres==1),aes(x = value)) +
+  geom_density(data = sdmdata2 %>% filter(pres==0),fill = "black",alpha = 0.1) +
+  geom_density(data = sdmdata2 %>% filter(pres==1),fill="blue",alpha= 0.2) +
+  facet_wrap(~name,scales = "free")+
+  theme_minimal()+
+  theme(text = element_text(size = 5))
+```
+
+## Model summary
+
+```{r}
+summary(full_model)
+
+plot(full_model)
+```
+
+## K fold predictons
+
+For each fold, models are fitted with (k-1)/k of the data. The model then predicts the probability of occurrence of the excluded true presences. 
+
+```{r,echo=F}
+prediction_compare <- data.frame(fold =0,prediction = 0)[-1,]
+for (i in 1:length(bs_models)){
+  predictions <- predict(bs_models[[i]],newdata = sdmdata[sdmdata$fold == i & sdmdata$pres == 1,],type="response") 
+  
+  prediction_compare <- bind_rows(prediction_compare,data.frame(fold =i,prediction = predictions))
+}
+
+ggplot(prediction_compare,aes(x = fold,y = prediction,group = fold))+
+  geom_boxplot(fill = "blue",alpha = 0.2)+
+  theme_minimal()
+
+```
+
+## Marginal effects
+
+```{r, results='asis',echo=F}
+terms <- names(full_model$coefficients)
+for (i in 2:length(terms)){
+  margins <- ggpredict(full_model, terms=paste0(terms[i]," [all]"))
+  print(plot(margins))
+}
+
+```
+
+## Species meta data
+
+```{r}
+str(species_metadata)
+```
+
+
+
+
+
+

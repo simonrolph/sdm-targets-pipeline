@@ -6,4 +6,4 @@
 
 *.tif
 *.rds
-
+outputs/by_species/reports/*.html
