@@ -1,7 +1,5 @@
 # An example {targets} pipeline for species distribution modelling
 
-(This is a work in progress)
-
 ## Overview
 
 This is a pipeline for modelling species distributions using open data: occurrence data from GBIF and environmental data sourced from Google Earth Engine (GEE) to produce maps of predicted species distributions, and maps of model variability. The maps of model variability can then be used to decide where to collect extra information to improve the model (as trialled in the DECIDE project).
@@ -38,32 +36,31 @@ The pipeline can be visualised with `tar_visnetwork(targets_only = T)`:
 
 It does't always look as neat as that, I had to move the blobs about a bit.
 
-### Process gbif data
+Functions are defined in the R markdown files in `/R` folder which contain functions which are then built into a pipeline in `_targets.R`. This readme provides overall sumamries of what each function does. Look in the individual markdown files for more information.
 
-Remove occurrence records with too much spatial uncertainty and reproject to OSBG (epsg:27700)
+### Species data processing (`sp_data_processing.Rmd`)
 
-### Generate samples
+ * `process_gbif_data()` - very basic data cleaning to select only presence records and remove spatially inaccurate records. Convert to a sf object.
+ * `rights_holders_text()` - produce a human-readable list of all the people who contributed records
+ * `get_species_metadata()` - use the `rgbif` package to make a call to the GBIF api to get species data from the GBIF backbone.
 
-generate some background samples for each species and then extract the environmental co-variates for both the occurrence data and the background samples.
+### Generate samples (`3_model_prep.Rmd`)
 
-### Fitting models
+ * `generate_samples()` - Generate some background samples for each species and then extract the environmental co-variates for both the occurrence data and the background samples.
 
-First, fit one model to all the data.
+### Fitting models and making predictions with models (`4_model_run.Rmd`)
 
-Second, fit k models to k-folded data. Using k=5 in the current set-up. This is to be able to calculate model variability.
+Fitting the models to the samples then using the environmental layers, we use the models to predict probability of occurrence across the entire spatial extent. We do this once with the full model then k times with the models fitted to the k-folded data (to get a measure of model variability).
 
-### Making predictions with models
+ * `fit_model()` - fit one model to all the data.
+ * `fit_bs_models()` - fit k models to k-folded data. Using k=5 in the current set-up. This is to be able to calculate model variability.
+ * `sp_probability()` - Predict modelled species probability of occurrence across entire environmental raster
+ * `sp_variability()` - Calculate model variability in species probability of occurrence across entire environmental raster
 
-Using the environmental layers, we use the models to predict probability of occurrence across the entire spatial extent. We do this once with the full model then k times with the models fitted to the k-folded data.
-
-### Combining species outputs
+### Combining species outputs (also `4_model_run.Rmd`)
 
 Each of the by-species outputs (model prediction and model variability) are combined into single layers. Species richness is calculated by summing the predicted probability of occurence of each model and 'recording priority' is the mean of the model variabilities.
 
-## Outputs
+ * `build_sp_richness` - species richness by summing modelled probability of occurence
+ * `build_rec_priority` - calculated as mean model variability
 
-Here you can see some example outputs which may not make much sense as models are simple and currently got 5 unrelated species probabilities stacked.
-
-![image](https://user-images.githubusercontent.com/17750766/214363557-92b4509c-3bf4-4d58-93c4-bbb5da8e2e2e.png)
-
-Species richness values have been rounded to a whole number to a terra/leaflet issue.
