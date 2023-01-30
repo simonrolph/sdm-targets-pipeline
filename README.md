@@ -12,7 +12,7 @@ The statistical models in this example are intentionally very simple as this aim
 
 The example region, species and environmental data relate to the Cairngorms National Park as this work is developed as part of a cultural ecosystem services use-case within the EU BioDT project.
 
-## Starting requirements data
+## Starting data requirements
 
 ### Environmental data
 
