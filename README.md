@@ -61,6 +61,6 @@ Fitting the models to the samples then using the environmental layers, we use th
 
 Each of the by-species outputs (model prediction and model variability) are combined into single layers. Species richness is calculated by summing the predicted probability of occurence of each model and 'recording priority' is the mean of the model variabilities.
 
- * `build_sp_richness` - species richness by summing modelled probability of occurence
- * `build_rec_priority` - calculated as mean model variability
+ * `build_sp_richness()` - species richness by summing modelled probability of occurence
+ * `build_rec_priority()` - calculated as mean model variability
 
