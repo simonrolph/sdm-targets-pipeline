@@ -4,7 +4,5 @@
 .Ruserdata
 .Renviron
 
-*.tif
-*.rds
 outputs/by_species/reports/*.html
 
