@@ -1,0 +1,91 @@
+---
+title: "Pipeline set up - environmental and species data"
+author: "Simon Rolph"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r}
+library(sf)
+library(terra)
+library(rgbif)
+library(dplyr)
+```
+
+### Species list
+
+The species list is stored as a text file of GBIF taxon IDs in `sp_list.txt`. You can add more species by looking up their taxon key on gbif and adding it to the list. This list is used to define the values in `tar_map()`.
+
+```{r,eval = F}
+sp_list_taxon_id <- readLines("inputs/species_list/sp_list.txt")
+```
+
+### Area of interest
+
+```{r}
+aoi_wkt <- readLines("inputs/regions/AOI_fit/AOI_WKT.txt") # the area of interest
+```
+
+### Download species data
+
+This code chunk downloads the data from GBIF using R package `rgbif` 
+
+```{r,eval = F}
+#make data request
+sp_data_request <- occ_download(pred_in("taxonKey",sp_list_taxon_id),
+                                pred("gadm","GBR.3_1"),
+                                pred_lt("coordinateUncertaintyInMeters",101),
+                                pred_within(aoi_wkt))
+
+#wait until the download is ready
+occ_download_wait(sp_data_request[1])
+
+# get data
+d <- occ_download_get(sp_data_request[1],path = "data/raw/occurence/") %>% 
+    occ_download_import()
+
+#split the data into taxa
+for (sp in sp_list_taxon_id){
+  d %>% 
+    dplyr::filter(taxonKey == sp) %>%
+    saveRDS(paste0("inputs/species_data/",sp,".rds"))
+}
+
+```
+
+
+### Pre-flight checks
+
+```{r}
+#do we have a species list?
+sp_list <- readLines("inputs/species_list/sp_list.txt")
+print(paste0(length(sp_list)," species"))
+
+#do we have data for all the species
+gsub(".rds","",list.files("inputs/species_data/")) %in% sp_list
+
+#do we have an environmental raster?
+env_rast <- rast("inputs/environmental/env-layers.tif")
+print(paste0(length(names(env_rast))," layers:"))
+names(env_rast)
+
+# overlay raster and shapefile to check overlap
+AOI_fit <- st_read("inputs/regions/AOI_fit/AOI_fit.shp") %>% vect()
+AOI_pred <- st_read("inputs/regions/AOI_predict/AOI_predict.shp") %>% vect()
+
+plot(env_rast[[1]])
+lines(AOI_fit,col = "red")
+lines(AOI_fit,col = "blue")
+
+```
+
+## Run pipeline
+
+```{r}
+library(targets)
+tar_visnetwork(T)
+tar_make()
+tar_prune()
+```
+
+

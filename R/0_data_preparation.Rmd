@@ -1,0 +1,112 @@
+---
+title: "Data preparation"
+author: "Simon Rolph"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+This is an example of data preparation of the input files. It reads files from the `data` directory and saves outputs to the `inputs` directory.
+
+There is a directory called `data` which I use for holding downloaded files which I then process into `inputs`.
+
+```{r}
+library(sf)
+
+```
+
+## Species list
+
+No processing is required to generate the species list. It's simply a case of writing a text file `inputs/species_list/sp_list.txt` and adding new lines with taxon keys eg.
+
+```
+5334220
+5410907
+8211070
+
+```
+
+## Shapefiles
+
+```{r}
+# read in the shapefile for the boundary that I downloaded 
+AOI_boundary_file_location = "data/raw/boundaries/SG_CairngormsNationalPark_2010/SG_CairngormsNationalPark_2010.shp"
+
+#read in the park boundary
+boundary <- st_read(AOI_boundary_file_location)
+
+#this prints the bounding box which can be used in the GEE script
+boundary %>% st_bbox()
+
+#export boundary as reprojected shapefile
+boundary_buffered <- boundary %>%
+  st_transform(4326) %>% #transform to wgs 1984
+  st_buffer(10000)
+
+
+st_write(boundary_buffered,"inputs/regions/AOI_fit/AOI_fit.shp",append=FALSE)
+st_write(boundary_buffered,"inputs/regions/AOI_predict/AOI_predict.shp",append=FALSE)
+
+#appriximate WKT of park with a bit of buffering
+boundary_wkt <- boundary_buffered %>% st_simplify(dTolerance=1000) %>% # simplify
+  st_geometry() %>% #only select the geometry to that st_as_text() works properly
+  st_as_text()
+
+#write the boundary of the AOI (area of interest) as WKT which can be used for querying GBIF
+writeLines(boundary_wkt,"inputs/regions/AOI_fit/AOI_WKT.txt")
+writeLines(boundary_wkt,"inputs/regions/AOI_predict/AOI_WKT.txt")
+
+```
+
+## Environmental data
+
+Load layers which have been downloaded from google earth engine and reproject to OSGB. 
+
+```{r}
+#combine into one spatRaster
+env_layers <- rast(list.files("data/raw/environmental/",full.names = T,pattern=".tif"))
+
+#proximity measures
+env_layers_proximity <- env_layers[[c('water','grass','flooded_vegetation','crops','shrub_and_scrub','built','bare','snow_and_ice')]]
+names(env_layers_proximity) <- paste0("prox_",names(env_layers_proximity))
+env_layers_proximity <- env_layers_proximity %>% aggregate(fact=9)
+#create a Gaussian window to use as smoothing
+w <- rayimage::generate_2d_gaussian(
+  sd = 4,
+  dim = c(11, 11),
+  rescale_unity = T
+)
+image(w)
+
+#apply the smoothing
+#do a coarse moving window with max
+env_layers_proximity2 <-  focal(env_layers_proximity,w=w, fun=max)
+
+#then do a nicer smooth with mean
+env_layers_proximity2 <-  focal(env_layers_proximity2,w=w, fun=mean)
+
+# resample back to original resolution
+env_layers_proximity2 <- resample(env_layers_proximity2,env_layers)
+
+#add it to the other layers
+env_layers <- c(env_layers,env_layers_proximity2)
+
+# set cells with water are set to NA on all layers because we are only modelling terrestrial species
+env_layers[env_layers$water>15] <- NA
+
+# remove the water layer
+env_layers <- env_layers[[names(env_layers)!="water"]]
+
+#(optionally) aggregate to make coarser for quicker model runs (for testing purposes)
+env_layers <- env_layers %>% aggregate(fact=4)
+
+env_layers
+
+#save the raster  
+writeRaster(env_layers,filename = "inputs/environmental/env-layers.tif",overwrite=T)
+
+```
+

@@ -1,1 +1,0 @@
-This is where I keep some files describing the GBIF rights holders to fulfil the CC-BY restrictions

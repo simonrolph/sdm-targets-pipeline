@@ -4,6 +4,11 @@
 
 This is a pipeline for modelling species distributions using open data: occurrence data from GBIF and environmental data sourced from Google Earth Engine (GEE) to produce maps of predicted species distributions, and maps of model variability. The maps of model variability can then be used to decide where to collect extra information to improve the model (as trialled in the DECIDE project).
 
+The aim of this repository is to:
+
+ * A simple demonstration of {targets} for SDMs
+ * Provide a extensible template for anyone wanting to build a SDM pipeline with {targets}
+
 The {targets package} is a Make-like pipeline tool for Statistics and data science in R. This code outlines how targets can be used to implement and track a SDM pipeline in R. The manual can be found here: https://books.ropensci.org/targets/
 
 In this example, raster processing is implemented using the {terra} package and other geometry processing s implemented using {sf}.
@@ -19,6 +24,8 @@ The pipeline requires three pieces of information:
  * A species list as defined by GBIF taxon keys in a `.txt` file. `inputs/species_list/sp_list.txt`
  * Two shapefiles `.shp` (+ associated files), one for the area of interest (AOI) you want to predict to, and one for the wider area you want to fit the model to (these can be the same shapefile). `inputs/regions/`
  * A environmental raster `.tif` covering the area of interest. `inputs/environmental/env_layers.tif`
+ 
+The species list and shapefiles are then used to download occurence data from GBIF for modelling.
 
 ### Species
 

@@ -1,1 +1,1 @@
-This is where I define the species list of taxonkeys and a .rds file with a look up for taxon keys and scientific/common names
+This is where I define the species list of taxonkeys

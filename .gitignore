@@ -8,6 +8,8 @@
 *.rds
 outputs/by_species/reports/*.html
 
+data
+!data/*.md
 
-
-inputs/species_list/sp_list.txt
+inputs
+!inputs/*.md

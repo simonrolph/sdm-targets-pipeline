@@ -9,9 +9,11 @@ knit('R/4_model_run.Rmd',output = 'R/4_model_run.md',quiet = T)
 
 tar_option_set(packages = c("terra","sf","dplyr","rgbif"))
 
+sp_list_location <- "inputs/species_list/sp_list.txt"
+
 #define the different species
-values <- data.frame(taxon_id = readLines("data/raw/species/sp_list.txt"),
-                     data_location = paste0("data/raw/occurence/",readLines("data/raw/species/sp_list.txt"),".rds"))
+values <- data.frame(taxon_id = readLines(sp_list_location),
+                     data_location = paste0("inputs/species_data/",readLines(sp_list_location),".rds"))
 
 
 # map the different species
@@ -59,10 +61,7 @@ mapped <- tar_map(values = values,
 
 list(
   #env_data_load
-  tar_target(env_layers, "data/derived/environmental/env-layers-OSGB.tif",format="file"),
-  tar_target(sp_data,"data/raw/occurence/sp_data_raw.rds",format="file"),
-  tar_target(rights_holders_text_content,rights_holders_text(sp_data),format="file"),
-  tar_target(species_names,species_names_table(sp_data),format="file"),
+  tar_target(env_layers, "inputs/environmental/env-layers.tif",format="file"),
   
   mapped,
   
