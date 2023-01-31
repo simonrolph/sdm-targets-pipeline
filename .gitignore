@@ -9,7 +9,5 @@
 outputs/by_species/reports/*.html
 
 data
-!data/*.md
-
 inputs
-!inputs/*.md
+!**/README.md
