@@ -45,9 +45,9 @@ The pipeline is started with `targets::tar_make()`
 
 The pipeline can be visualised with `tar_visnetwork(targets_only = T)`:
 
-![image](https://user-images.githubusercontent.com/17750766/214363002-0c057b06-3753-406a-9521-2667b5e84b23.png)
+![image](https://user-images.githubusercontent.com/17750766/215775142-78e12954-b3ef-4352-a2c4-c79610ea888d.png)
 
-It does't always look as neat as that, I had to move the blobs about a bit.
+It does't always look as neat as that, I had to move the blobs about a bit. The blobs are green because this is after the pipeline has been run and the objects are up to date.
 
 Functions are defined in the R markdown files in `/R` folder which contain functions which are then built into a pipeline in `_targets.R`. This readme provides overall sumamries of what each function does. Look in the individual markdown files for more information.
 
@@ -76,4 +76,32 @@ Each of the by-species outputs (model prediction and model variability) are comb
 
  * `build_sp_richness()` - species richness by summing modelled probability of occurence
  * `build_rec_priority()` - calculated as mean model variability
+ 
+ ## Example run
+ 
+The repository comes with some example data so you can run the pipeline straight away.
+ 
+First, install all the required packages using `renv` 
+
+```
+install.packages("renv")
+renv::restore()
+```
+
+Rename the `data_example` folder to simply `data`. Rename the `data` folder to something else so that you won't overwrite the files in `data`.
+
+Run the pipeline
+
+```
+library(targets)
+tar_visnetwork(T)
+tar_make()
+```
+
+When it's finished then you can explore the `\outputs\by_species\reports` folder look at the species reports with content like such:
+
+![image](https://user-images.githubusercontent.com/17750766/215774201-60c0c2c1-766f-47a5-96ff-3272a356ff63.png)
+
+
+
 
