@@ -7,3 +7,7 @@
 *.tif
 *.rds
 outputs/by_species/reports/*.html
+
+
+
+inputs/species_list/sp_list.txt

@@ -14,13 +14,19 @@ The example region, species and environmental data relate to the Cairngorms Nati
 
 ## Starting data requirements
 
-### Environmental data
+The pipeline requires three pieces of information:
 
-The inital processing of environmental data is currently not pipelined with targets and is run as via `1_env_data_processing.Rmd`. It uses `.tif` files that have been downloaded from GEE using a GEE script which you can find a copy of in `GEE/export_end_data.js`. You can find an online copy of it here: https://code.earthengine.google.com/ea6fd222f8137ed0e61466742892db74 
+ * A species list as defined by GBIF taxon keys in a `.txt` file. `inputs/species_list/sp_list.txt`
+ * Two shapefiles `.shp` (+ associated files), one for the area of interest (AOI) you want to predict to, and one for the wider area you want to fit the model to (these can be the same shapefile). `inputs/regions/`
+ * A environmental raster `.tif` covering the area of interest. `inputs/environmental/env_layers.tif`
 
 ### Species
 
 The target species to model are defined in a `.txt` file `data/raw/species/sp_list.txt` which just lists (one line per key) the GBIF taxonKeys which is simply a number eg https://www.gbif.org/occurrence/search?taxon_key=7412043
+
+### Environmental data
+
+The inital processing of environmental data is currently not pipelined with targets and is run as via `1_env_data_processing.Rmd`. It uses `.tif` files that have been downloaded from GEE using a GEE script which you can find a copy of in `GEE/export_end_data.js`. You can find an online copy of it here: https://code.earthengine.google.com/ea6fd222f8137ed0e61466742892db74 
 
 Species data is then downloaded from GBIF using the code chunks in `R/2_sp_data_processing.Rmd`
 
