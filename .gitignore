@@ -8,6 +8,3 @@
 *.rds
 outputs/by_species/reports/*.html
 
-data
-inputs
-!**/README.md
