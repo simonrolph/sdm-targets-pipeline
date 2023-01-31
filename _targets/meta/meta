@@ -34,7 +34,6 @@ mapped|object|52188ac7a2dcf1b0|||||||||||||||
 process_gbif_data|function|c5a040b413242250|||||||||||||||
 recording_priority|stem|222b4a2fda167a57|40176e1c9f65630e|dff4b46bbe7e7b49|-446491166|outputs/combined/recording_priority/rec_richness.tif|t19388.4736597836s|2227087dbb74c318|3718313|file|local|vector|||0.81||
 rights_holders_text|function|66db26a6f5f0c288|||||||||||||||
-rights_holders_text_content|stem|4b4f55c9e45fcaf0|b9a2ee84892febc9|94bca65503878c9f|416740973|data/derived/occurence/species_data_rights_holders.txt|t19382.4457875694s|b85a341466332c6f|11319|file|local|vector|||0.35||
 sdm_data_2481792|stem|bbc721625347ac16|bde63bb9cb568ad2|7657c8cca8134678|1441482001||t19388.4677136355s|6899feeb0940c8dd|993818|rds|local|vector|||1.53||
 sdm_data_5285637|stem|2c165d8cc394b85b|2428f7917a905cf1|2a63dd1a39412d19|-1435450919||t19388.4676134381s|2a2af0b76e8fcb17|1167859|rds|local|vector|||2.78||
 sdm_data_5334220|stem|f94701a38b755e14|b23a8f0bab87e0a0|5655b2d6379bae52|-734187913||t19388.4676898973s|4bd2d09327ba54e4|1018534|rds|local|vector|||2.04||
@@ -55,7 +54,6 @@ sdm_var_5285637|stem|53fce62a1fee957b|4a49a75b243e7226|e066d7b59d7fa998|42435038
 sdm_var_5334220|stem|f2755e66e4a230fa|42e7d6a2434fe583|2bc7c3d8b6684f7b|-1169554722|outputs/by_species/model_variability/5334220.tif|t19388.4694198906s|3b2945c2b16c3a61|3913518|file|local|vector|||24.94||
 sdm_var_5410907|stem|82ce772f1640764f|1584dfe088b2eeab|c1265cf7902e38c9|1056459183|outputs/by_species/model_variability/5410907.tif|t19388.4701839297s|a9531276be0b6f03|3683076|file|local|vector|||26.52||
 sdm_var_8211070|stem|23d27af1c417d44a|ea92f94ef64deeea|8ff9c5f118fb44fa|1475071868|outputs/by_species/model_variability/8211070.tif|t19388.4691284047s|16cdddebbe987f5a|3840730|file|local|vector|||17.78||
-sp_data|stem|1c56420ac23f72f8|46fe255ceb07135d|ef46db3751d8e999|1116549392|data/raw/occurence/sp_data_raw.rds|t19380.6305508015s|78653b61dcdcf4cc|1403293|file|local|vector|||7.04||
 sp_data_request|object|0adc01c827e071cd|||||||||||||||
 sp_list_location|object|150f1388d67e238c|||||||||||||||
 sp_probability|function|3ff56747e44eae59|||||||||||||||
@@ -68,6 +66,5 @@ species_metadata_5285637|stem|8762f84574467dd8|6e161a273e9ffb92|3221cd704aaef5e1
 species_metadata_5334220|stem|285cedf6339c1a85|75384bb35ea7176a|0f74519a39a21529|-2067843316||t19382.5205183674s|e4a71b2c4715d0d4|758|rds|local|vector|||0.09||
 species_metadata_5410907|stem|1ab59e7fa0428815|a6c215f483f95886|b896c635b9a1bf52|1184373163||t19382.5205220885s|977dd89add66967c|750|rds|local|vector|||0.1||
 species_metadata_8211070|stem|5a8899d13ccbfda7|d75b95ce83c25ec1|82c66a3259908242|1152123723||t19382.5205291661s|b7835a2d73935a3b|769|rds|local|vector|||0.42||
-species_names|stem|7b174cd36c28f4bc|3d743a2c72d8ea02|fb8fbb91d2a7810f|938678264|data/derived/species/species_names.rds|t19382.4462958783s|c59f347d1e269679|431|file|local|vector|||0.39||
 species_names_table|function|a7b6aef0d87fa05f|||||||||||||||
 values|object|dc2fddaf7a9268f4|||||||||||||||

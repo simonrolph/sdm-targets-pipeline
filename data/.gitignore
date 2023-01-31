@@ -6,3 +6,6 @@
 *.txt
 *.rds
 *.zip
+*.sbn
+*.sbx
+*.xml
