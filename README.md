@@ -39,6 +39,14 @@ Species data is then downloaded from GBIF using the code chunks in `R/2_sp_data_
 
 ## Pipeline
 
+### Pre-pipeline stuff
+
+`R/0_data_preparation.Rmd` and `R/1_pipeline_set_up.Rmd` are scripts that I run before the pipeline to create the starting data requirements I set out above. This isn't pipelined because you might do this stage in a completely different manner depending on your data sources. The data preparation script will need to be tweaked to your use-case. It takes the raw shapefile that you might have downloaded from the internet, reprojects it and exports it the to `inputs` directory ready for the pipeline start. It also does a bit of processing for the environmental raster - removing water etc.
+
+You need to run the pipeline_set_up script as it downloads data from GBIF for the species you have specified in `data/raw/species/sp_list.txt`.
+
+### It's pipeline time
+
 The pipeline is defined in `_targets.R`. It uses static branching (https://books.ropensci.org/targets/static.html) to create branches for each species based on the taxon keys defined in `sp_list.txt`.
 
 The pipeline is started with `targets::tar_make()`
