@@ -2,6 +2,8 @@ library(targets)
 library(tarchetypes)
 library(knitr)
 
+
+
 # file 1_ is not targetted due to compications with using terra and targets. See https://github.com/ropensci/targets/discussions/809
 knit('R/2_sp_data_processing.Rmd',output = 'R/2_sp_data_processing.md',quiet = T)
 knit('R/3_model_prep.Rmd',output = 'R/3_model_prep.md',quiet = T)

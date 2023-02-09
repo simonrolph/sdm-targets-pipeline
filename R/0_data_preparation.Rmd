@@ -46,8 +46,10 @@ boundary_buffered <- boundary %>%
   st_transform(4326) %>% #transform to wgs 1984
   st_buffer(10000)
 
+boundary_fit <- st_read("data/raw/boundaries/gadm41_GBR_1.json") %>% filter(NAME_1 == "Scotland")
+boundary_fit %>% st_bbox()
 
-st_write(boundary_buffered,"inputs/regions/AOI_fit/AOI_fit.shp",append=FALSE)
+st_write(boundary_fit,"inputs/regions/AOI_fit/AOI_fit.shp",append=FALSE)
 st_write(boundary_buffered,"inputs/regions/AOI_predict/AOI_predict.shp",append=FALSE)
 
 #appriximate WKT of park with a bit of buffering
@@ -55,8 +57,12 @@ boundary_wkt <- boundary_buffered %>% st_simplify(dTolerance=1000) %>% # simplif
   st_geometry() %>% #only select the geometry to that st_as_text() works properly
   st_as_text()
 
+# boundary_fit_wkt <- boundary_fit %>%# simplify
+#   st_geometry() %>% #only select the geometry to that st_as_text() works properly
+#   st_as_text()
+
 #write the boundary of the AOI (area of interest) as WKT which can be used for querying GBIF
-writeLines(boundary_wkt,"inputs/regions/AOI_fit/AOI_WKT.txt")
+#writeLines(boundary_fit_wkt,"inputs/regions/AOI_fit/AOI_WKT.txt")
 writeLines(boundary_wkt,"inputs/regions/AOI_predict/AOI_WKT.txt")
 
 ```

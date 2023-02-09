@@ -1,7 +1,7 @@
 ---
 title: "Running models and making predictions"
 author: "Simon Rolph"
-date: "2023-01-31"
+date: "2023-02-09"
 output: html_document
 ---
 
@@ -90,7 +90,7 @@ build_sp_richness <- function(rasters){
 }
 
 build_rec_priority <- function(rasters){
-  file_name <- "outputs/combined/recording_priority/rec_richness.tif"
+  file_name <- "outputs/combined/recording_priority/rec_priority.tif"
   rast(rasters) %>% 
     mean(filename = file_name,overwrite=T)
   
