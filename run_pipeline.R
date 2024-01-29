@@ -32,6 +32,7 @@ source("R/1_gbif_refresh.R")
 
 ## Run pipeline
 library(targets)
-tar_visnetwork(T)
+tar_visnetwork(T,exclude = starts_with("effort"))
+tar_visnetwork(T,exclude = !starts_with("effort"))
 tar_make()
 tar_prune()

@@ -17,9 +17,20 @@ sp_list_location <- "inputs/species_list/sp_list.txt"
 values <- data.frame(taxon_id = readLines(sp_list_location),
                      data_location = paste0("inputs/species_data/",readLines(sp_list_location),".rds"))
 
+#if we're looking to just test the pipeline
+test_mode <- F
+if(test_mode){ #only run for 4 species
+  values <- values[1:4,]
+}
+
+effort_mapped <- tar_map(values = values,
+                         names = taxon_id,
+                         tar_target(effort_gbif_data_raw, data_location, format = "file"),
+                         tar_target(effort_gbif_data_processed, process_gbif_data(effort_gbif_data_raw)))
+
 
 # map the different species
-mapped <- tar_map(values = values,
+mapped <-tar_map(values = values,
                   names = taxon_id,
                   
                   #load in the raw gbif data (with files for each species)
@@ -28,6 +39,9 @@ mapped <- tar_map(values = values,
                   #process the raw gbif data
                   tar_target(species_metadata,get_species_metadata(gbif_data_raw)),
                   tar_target(gbif_data_processed, process_gbif_data(gbif_data_raw)),
+                 
+                 
+
                   
                   #model_prep
                   tar_target(sdm_data,generate_samples(env_layers,gbif_data_processed)),
@@ -35,14 +49,14 @@ mapped <- tar_map(values = values,
                   # fitting models
                   tar_target(full_model,fit_model(sdm_data)),
                   tar_target(sdm_pred,sp_probability(full_model,
-                                                     env_layers,
+                                                     env_layers_aoi,
                                                      taxon_id,
                                                      species_metadata),format ="file"), 
                   
                   # model variability (for determining recording priority)
                   tar_target(bs_models,fit_bs_models(sdm_data)),
                   tar_target(sdm_var,sp_variability(bs_models,
-                                                    env_layers,
+                                                    env_layers_aoi,
                                                     taxon_id,
                                                     species_metadata),format ="file"),
                   
@@ -64,6 +78,10 @@ mapped <- tar_map(values = values,
 list(
   #env_data_load
   tar_target(env_layers, "inputs/environmental/env-layers.tif",format="file"),
+  tar_target(aoi_predict, "inputs/regions/AOI_predict/AOI_predict.shp",format="file"),
+  tar_target(env_layers_aoi,crop_env_layers(env_layers,aoi_predict),format = "file"),
+  
+  effort_mapped,
   
   mapped,
   
@@ -72,6 +90,7 @@ list(
               command = build_sp_richness(c(!!!.x)),
               use_names = F,
               format="file"),
+  
   tar_combine(name = recording_priority,
               mapped$sdm_var,
               command= build_rec_priority(c(!!!.x)),

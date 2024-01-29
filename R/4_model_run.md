@@ -1,7 +1,7 @@
 ---
 title: "Running models and making predictions"
 author: "Simon Rolph"
-date: "2023-02-09"
+date: "2023-04-24"
 output: html_document
 ---
 
@@ -46,6 +46,20 @@ fit_bs_models <- function(sdm_data){
   bs_models
 }
 ```
+
+Crop env layers
+
+
+```r
+crop_env_layers <- function(env_layers,aoi){
+  cropped <- rast(env_layers) %>% crop(st_read(aoi)) %>% mask(st_read(aoi))
+  file_name <- "inputs/environmental/env-layers-cropped.tif"
+  
+  writeRaster(cropped,file_name,overwrite=T)
+  file_name
+}
+```
+
 
 Make predictions in space
 

@@ -8,7 +8,7 @@ sp_list_taxon_key <- readLines("inputs/species_list/sp_list.txt")
 print(paste0(length(sp_list_taxon_key)," species in species list"))
 
 #where = scotland as defined as
-#gadm = GBR.3_1
+AOI_fit <- readLines("inputs/regions/AOI_fit/AOI_WKT.txt")
 
 # WHAT DO WE HAVE DATA ON ALREADY?
 
@@ -25,7 +25,7 @@ if (length(sp_list_missing)>0){
   
   #make data request
   sp_data_request <- occ_download(pred_in("taxonKey",sp_list_missing),
-                                  pred("gadm","GBR.3_1"),
+                                  pred_within(AOI_fit),
                                   pred_lt("coordinateUncertaintyInMeters",101))
   
   #wait until the download is ready
@@ -48,7 +48,7 @@ if (length(sp_list_missing)>0){
 print("Checking for updates in GBIF remote data store...")
 
 # Look for updates to GBIF data
-gbif_n <- occ_search(gadmGid = "GBR.3_1",
+gbif_n <- occ_search(geometry = AOI_fit,
                    taxonKey = sp_list_taxon_key,
                    limit=0,
                    coordinateUncertaintyInMeters='0,100',
@@ -88,7 +88,7 @@ if (length(sp_list_to_update)>0){
   #make data request
   sp_data_request <- occ_download(pred_in("taxonKey",sp_list_to_update),
                                   pred_lt("coordinateUncertaintyInMeters",101),
-                                  pred_within(aoi_wkt))
+                                  pred_within(AOI_fit))
   
   #wait until the download is ready
   occ_download_wait(sp_data_request[1])
